@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ใส่ข้อมูลตัวอย่าง · LeaveEasy</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/nav.js" defer></script>
+  <script src="js/data.js" defer></script>
+  <script type="module" src="js/seed.js"></script>
+  <style>
+    /* หน้านี้เป็นเครื่องมือชั่วคราว ไม่ใช่หน้าจอของระบบ
+       จึงเก็บหน้าตาไว้ในหน้านี้เอง ไม่ไปปนใน css/style.css */
+    #บันทึกผล {
+      font-family: Consolas, Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.9;
+      max-height: 420px;
+      overflow-y: auto;
+      background: #fbfcfd;
+      border: 1px solid var(--สีขอบ);
+      border-radius: 8px;
+      padding: 12px 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    #บันทึกผล:empty { display: none; }
+    .บรรทัดสำเร็จ { color: #1b5e34; }
+    .บรรทัดพลาด   { color: #8b1f1a; font-weight: 700; }
+    .บรรทัดหัวข้อ { font-weight: 700; margin-top: 10px; display: block; }
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+
+  <div class="container">
+    <h1>ใส่ข้อมูลตัวอย่างลง Firestore</h1>
+    <p class="subtitle">
+      เครื่องมือชั่วคราวสำหรับสัปดาห์ที่ 6 · ไม่ใช่หน้าจอของระบบ · ใช้เสร็จแล้วลบไฟล์นี้ทิ้งได้
+    </p>
+
+    <div class="card">
+      <h2>จะเขียนอะไรลงไปบ้าง</h2>
+      <div class="field-row"><span class="k">users</span><span>3 ไฟล์ — u001 ถึง u003</span></div>
+      <div class="field-row"><span class="k">leaveTypes</span><span>3 ไฟล์ — lt001 ถึง lt003</span></div>
+      <div class="field-row"><span class="k">leaveRequests</span><span>5 ไฟล์ — lr001 ถึง lr005</span></div>
+      <div class="field-row"><span class="k">approvals</span><span>4 ไฟล์ — โฟลเดอร์ย่อยที่ซ้อนอยู่ในใบลาแต่ละใบ</span></div>
+      <p class="hint">
+        ข้อมูลทั้งหมดอ่านมาจาก <code>js/data.js</code> โดยตรง จึงตรงกับที่หน้าจออื่นใช้อยู่เป๊ะ
+      </p>
+
+      <div class="alert alert-warn">
+        ⚠️ <strong>กดปุ่มนี้แล้วข้อมูลเดิมที่ชื่อไฟล์เดียวกันจะถูกเขียนทับ</strong><br>
+        รันซ้ำได้ไม่เกิดข้อมูลซ้ำ แต่ถ้าคุณแก้อะไรไว้ใน Firebase Console จะกลับไปเป็นค่าตั้งต้นทั้งหมด
+      </div>
+
+      <div id="ข้อความเตือน" class="alert alert-error hidden"></div>
+
+      <div class="btn-row">
+        <button type="button" id="ปุ่มใส่ข้อมูล">ใส่ข้อมูลตัวอย่างลง Firestore</button>
+        <a class="btn btn-ghost" href="leave-requests.html">ไปหน้ารายการใบลา</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>ผลการทำงาน</h2>
+      <div id="บันทึกผล"></div>
+      <p class="hint" id="ยังไม่ได้เริ่ม">ยังไม่ได้เริ่ม — กดปุ่มด้านบนเพื่อเขียนข้อมูลลงฐาน</p>
+    </div>
+  </div>
+</body>
+</html>
