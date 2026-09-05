@@ -146,3 +146,35 @@ textarea { min-height: 110px; resize: vertical; }
   .hide-mobile { display: none; }
   .navbar .nav-user { margin-left: 0; width: 100%; }
 }
+
+/* ── แถบตัวกรองและการเรียงลำดับของหน้ารายการใบลา ── */
+.filter-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.filter-row .filter-field { flex: 1 1 190px; }
+.filter-row label { margin: 0 0 4px; }
+.filter-row .filter-reset { flex: 0 0 auto; }
+.filter-row .filter-reset button { width: auto; }
+
+/* ── หน้าต่างถามยืนยัน (ใช้ตอนลบใบลา) ── */
+dialog {
+  max-width: 460px;
+  border: 1px solid var(--สีขอบ);
+  border-radius: 10px;
+  padding: 20px 22px;
+}
+dialog::backdrop { background: rgba(0, 0, 0, .45); }
+dialog h2 { margin-top: 0; }
+
+/* ── ปุ่มออกจากระบบบนแถบเมนูด้านบน ── */
+/* ปุ่มปกติเป็นพื้นน้ำเงินทึบ วางบนแถบเมนูสีเดียวกันแล้วจะจมหายไป จึงทำเป็นแบบขอบบางแทน */
+.btn-logout {
+  font-size: 15px;
+  padding: 5px 12px;
+  background: transparent;
+  border-color: rgba(255, 255, 255, .6);
+  color: #fff;
+}
+.btn-logout:hover { background: rgba(255, 255, 255, .18); }
+
+/* ── หน้าเข้าสู่ระบบและสมัครสมาชิก ── */
+/* หน้าพวกนี้มีแค่ฟอร์มสั้น ๆ กล่องแคบลงทำให้สายตาไม่ต้องกวาดข้ามจอทั้งจอ */
+.container-narrow { max-width: 460px; }
