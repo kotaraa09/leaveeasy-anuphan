@@ -26,6 +26,8 @@ import {
     return;
   }
 
+  ติดปุ่มดูรหัสผ่าน();                    // js/util.js — เติมปุ่มลืมตาให้ช่องรหัสผ่าน
+
   ฟอร์ม.addEventListener("submit", async function (e) {
     e.preventDefault();
     ซ่อนคำเตือน();
@@ -56,14 +58,14 @@ import {
     return ค่า;
   }
 
+  // ใช้ตัวช่วยกลางจาก js/util.js กล่องเตือนจึงมีไอคอนและการจัดวางเหมือนทุกหน้า
   function เตือน(ข้อความ, ช่อง) {
-    กล่องเตือน.textContent = "⚠️ " + ข้อความ;
-    กล่องเตือน.classList.remove("hidden");
+    แสดงเตือน(กล่องเตือน, ข้อความ);
     if (ช่อง) document.getElementById(ช่อง).focus();
   }
 
   function ซ่อนคำเตือน() {
-    กล่องเตือน.classList.add("hidden");
+    ซ่อนเตือน(กล่องเตือน);
   }
 
   function กำลังส่ง(กำลัง) {

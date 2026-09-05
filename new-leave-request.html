@@ -3,8 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <title>ยื่นใบลาใหม่ · LeaveEasy</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%230071e3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5.2' width='22' height='19.8' rx='6.2'/%3E%3Cpath d='M3 11.4h22M9.6 3.4v3.6M18.4 3.4v3.6'/%3E%3Cpath d='m10 18.1 2.6 2.6 5.4-5.6'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300..700&display=swap">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/icons.js" defer></script>
   <script src="js/util.js" defer></script>
   <script src="js/nav.js" defer></script>
   <script src="js/data.js" defer></script>
@@ -13,37 +20,62 @@
 <body>
   <div id="nav"></div>
 
-  <div class="container">
-    <h1>ยื่นใบลาใหม่</h1>
-    <p class="subtitle">กรอกให้ครบทุกช่อง แล้วกดบันทึก · ใบลาใหม่จะมีสถานะ รอพิจารณา เสมอ</p>
+  <main class="container container-detail">
+    <a class="back-link" href="leave-requests.html"><span data-ไอคอน="ซ้าย"></span>รายการใบลา</a>
+
+    <div class="page-head">
+      <div class="titles">
+        <h1>ยื่นใบลาใหม่</h1>
+        <p class="subtitle">กรอกให้ครบทุกช่องแล้วกดยื่น · ใบใหม่จะมีสถานะ
+          <span class="badge badge-รอพิจารณา">รอพิจารณา</span> เสมอ จนกว่าหัวหน้าจะพิจารณา</p>
+      </div>
+    </div>
 
     <div class="card">
-      <div id="ข้อความเตือน" class="alert alert-error hidden"></div>
+      <div id="ข้อความเตือน" class="alert alert-error hidden" role="alert"></div>
 
-      <form id="ฟอร์มใบลา">
-        <label for="title">หัวข้อ</label>
-        <input type="text" id="title" maxlength="100" placeholder="เช่น ลาพักร้อนไปเที่ยวกับครอบครัว">
+      <form id="ฟอร์มใบลา" novalidate>
+        <div class="field">
+          <label for="title">หัวข้อ</label>
+          <input type="text" id="title" maxlength="100" autocomplete="off"
+                 placeholder="เช่น ลาพักร้อนไปเที่ยวกับครอบครัว">
+        </div>
 
-        <label for="reason">เหตุผลการลา</label>
-        <textarea id="reason" maxlength="500" placeholder="เล่าเหตุผลสั้น ๆ ให้หัวหน้าเข้าใจ"></textarea>
+        <div class="field">
+          <label for="reason">เหตุผลการลา</label>
+          <textarea id="reason" maxlength="500" placeholder="เล่าเหตุผลสั้น ๆ ให้หัวหน้าเข้าใจ"></textarea>
+        </div>
 
-        <label for="leaveTypeId">ประเภทการลา</label>
-        <select id="leaveTypeId">
-          <option value="">— เลือกประเภทการลา —</option>
-        </select>
+        <div class="field">
+          <label for="leaveTypeId">ประเภทการลา</label>
+          <select id="leaveTypeId">
+            <option value="">เลือกประเภทการลา</option>
+          </select>
+        </div>
 
-        <label for="startDate">วันที่เริ่มลา</label>
-        <input type="date" id="startDate">
+        <!-- วันเริ่มกับวันสิ้นสุดเป็นคำถามเดียวกัน คือ "ลาช่วงไหน" จึงวางคู่กันในแถวเดียว -->
+        <div class="field">
+          <label for="startDate">ช่วงวันที่ลา</label>
+          <div class="field-pair">
+            <div>
+              <input type="date" id="startDate" aria-label="วันที่เริ่มลา">
+              <p class="hint">วันแรกที่ลา</p>
+            </div>
+            <div>
+              <input type="date" id="endDate" aria-label="วันที่สิ้นสุดการลา">
+              <p class="hint">วันสุดท้ายที่ลา</p>
+            </div>
+          </div>
+          <!-- js/new-leave-request.js นับจำนวนวันให้ทันทีที่เลือกครบทั้งสองช่อง -->
+          <p class="hint" id="สรุปจำนวนวัน" aria-live="polite"></p>
+        </div>
 
-        <label for="endDate">วันที่สิ้นสุด</label>
-        <input type="date" id="endDate">
-
-        <div class="btn-row">
-          <button type="submit" id="ปุ่มบันทึก">บันทึก</button>
+        <div class="btn-row" style="margin-top:24px">
+          <button type="submit" id="ปุ่มบันทึก">ยื่นใบลา</button>
           <a class="btn btn-ghost" href="leave-requests.html">ยกเลิก</a>
         </div>
       </form>
     </div>
-  </div>
+  </main>
 </body>
 </html>

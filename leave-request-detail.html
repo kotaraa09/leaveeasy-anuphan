@@ -3,8 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <title>รายละเอียดใบลา · LeaveEasy</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%230071e3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5.2' width='22' height='19.8' rx='6.2'/%3E%3Cpath d='M3 11.4h22M9.6 3.4v3.6M18.4 3.4v3.6'/%3E%3Cpath d='m10 18.1 2.6 2.6 5.4-5.6'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300..700&display=swap">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/icons.js" defer></script>
   <script src="js/util.js" defer></script>
   <script src="js/nav.js" defer></script>
   <script type="module" src="js/leave-request-detail.js"></script>
@@ -12,39 +19,50 @@
 <body>
   <div id="nav"></div>
 
-  <div class="container">
-    <h1>รายละเอียดใบลา</h1>
+  <main class="container container-detail">
+    <a class="back-link" href="leave-requests.html"><span data-ไอคอน="ซ้าย"></span>รายการใบลา</a>
 
-    <div id="กล่องใบลา" class="card">
-      <p>กำลังโหลดข้อมูล…</p>
-    </div>
+    <!-- js/leave-request-detail.js วาดหัวใบลา รายการข้อมูล และปุ่มพิจารณาลงในกล่องนี้ -->
+    <section class="card card-flush" id="กล่องใบลา" aria-label="รายละเอียดใบลา">
+      <div style="padding:20px">
+        <div class="skeleton sk-line" style="width:46%;height:24px;margin-bottom:12px"></div>
+        <div class="skeleton sk-line" style="width:30%"></div>
+      </div>
+      <div class="sk-row"><div class="skeleton sk-line" style="width:64%"></div></div>
+      <div class="sk-row"><div class="skeleton sk-line" style="width:44%"></div></div>
+      <div class="sk-row"><div class="skeleton sk-line" style="width:52%"></div></div>
+    </section>
 
-    <div id="กล่องความเห็น" class="card hidden">
+    <section class="card hidden" id="กล่องความเห็น">
       <h2>ความเห็นการอนุมัติ</h2>
-      <div id="รายการความเห็น"></div>
+      <p class="hint">ความเห็นถูกเก็บไว้ในใบลาใบนี้ถาวร และลบทีหลังไม่ได้ —
+        ต้องมีอย่างน้อย 1 ความเห็นก่อน จึงจะกดไม่อนุมัติได้</p>
 
-      <label for="ข้อความความเห็น">เขียนความเห็นใหม่</label>
-      <textarea id="ข้อความความเห็น" placeholder="พิมพ์ความเห็นถึงผู้ขอลา"></textarea>
-      <div id="เตือนความเห็น" class="alert alert-error hidden"></div>
+      <div id="รายการความเห็น" class="thread" style="margin-top:18px"></div>
+
+      <div class="field" style="margin-top:22px;padding-top:20px;border-top:1px solid var(--เส้นคั่น)">
+        <label for="ข้อความความเห็น">เขียนความเห็นใหม่</label>
+        <textarea id="ข้อความความเห็น" maxlength="500"
+                  placeholder="พิมพ์ความเห็นถึงผู้ขอลา เช่น เหตุผลที่อนุมัติหรือไม่อนุมัติ"></textarea>
+      </div>
+
+      <div id="เตือนความเห็น" class="alert alert-error hidden" role="alert"></div>
+
       <div class="btn-row">
         <button type="button" id="ปุ่มส่งความเห็น">ส่งความเห็น</button>
       </div>
-    </div>
-
-    <div class="btn-row">
-      <a class="btn btn-ghost" href="leave-requests.html">← กลับไปหน้ารายการ</a>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <!-- หน้าต่างถามยืนยันก่อนลบ · เป็น <dialog> ของ HTML ล้วน ไม่ต้องใช้ไลบรารีเสริม
        ปิดหน้าต่างด้วยปุ่มยกเลิกหรือปุ่ม ESC ก็ได้ ทั้งสองทางแปลว่า "ไม่ลบ" -->
   <dialog id="หน้าต่างยืนยันลบ">
-    <h2>ยืนยันการลบใบลา</h2>
+    <h2>ลบใบลาใบนี้?</h2>
     <p id="ข้อความยืนยันลบ"></p>
-    <p class="hint">ลบแล้วกู้คืนไม่ได้ · ความเห็นทั้งหมดในใบนี้จะถูกลบไปพร้อมกัน</p>
+    <p style="margin-top:8px">ลบแล้วกู้คืนไม่ได้ · ความเห็นทั้งหมดในใบนี้จะถูกลบไปพร้อมกัน</p>
     <div class="btn-row">
-      <button type="button" class="btn-danger" id="ปุ่มยืนยันลบ">ลบใบลานี้</button>
       <button type="button" class="btn-ghost" id="ปุ่มยกเลิกลบ">ยกเลิก</button>
+      <button type="button" class="btn-danger" id="ปุ่มยืนยันลบ">ลบใบลา</button>
     </div>
   </dialog>
 </body>

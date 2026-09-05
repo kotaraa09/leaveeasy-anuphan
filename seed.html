@@ -3,71 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <title>ใส่ข้อมูลตัวอย่าง · LeaveEasy</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%230071e3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5.2' width='22' height='19.8' rx='6.2'/%3E%3Cpath d='M3 11.4h22M9.6 3.4v3.6M18.4 3.4v3.6'/%3E%3Cpath d='m10 18.1 2.6 2.6 5.4-5.6'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300..700&display=swap">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/icons.js" defer></script>
+  <script src="js/util.js" defer></script>
   <script src="js/nav.js" defer></script>
   <script src="js/data.js" defer></script>
   <script type="module" src="js/seed.js"></script>
   <script type="module" src="js/auth.js"></script>
   <style>
     /* หน้านี้เป็นเครื่องมือชั่วคราว ไม่ใช่หน้าจอของระบบ
-       จึงเก็บหน้าตาไว้ในหน้านี้เอง ไม่ไปปนใน css/style.css */
+       จึงเก็บหน้าตาไว้ในหน้านี้เอง ไม่ไปปนใน css/style.css
+
+       แต่ยังต้องหยิบ "ตัวแปรสี" จาก css/style.css มาใช้เสมอ
+       ถ้าเขียนสีตายตัวลงไป พอผู้ใช้เปิดโหมดมืดจะกลายเป็นตัวหนังสือดำบนพื้นดำทันที */
     #บันทึกผล {
-      font-family: Consolas, Menlo, monospace;
-      font-size: 14px;
+      font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
+      font-size: .8125rem;
       line-height: 1.9;
       max-height: 420px;
       overflow-y: auto;
-      background: #fbfcfd;
-      border: 1px solid var(--สีขอบ);
-      border-radius: 8px;
+      background: var(--พื้นรอง);
+      border: 1px solid var(--เส้นคั่น);
+      border-radius: var(--r-md);
       padding: 12px 14px;
       white-space: pre-wrap;
       word-break: break-word;
+      /* ตัวเลขในบันทึกเรียงตรงคอลัมน์กันเวลาไล่อ่านทีละบรรทัด */
+      font-variant-numeric: tabular-nums;
     }
     #บันทึกผล:empty { display: none; }
-    .บรรทัดสำเร็จ { color: #1b5e34; }
-    .บรรทัดพลาด   { color: #8b1f1a; font-weight: 700; }
-    .บรรทัดหัวข้อ { font-weight: 700; margin-top: 10px; display: block; }
+    .บรรทัดสำเร็จ { color: var(--เขียว); }
+    .บรรทัดพลาด   { color: var(--แดง); font-weight: 700; }
+    .บรรทัดหัวข้อ {
+      font-weight: 700;
+      margin-top: 10px;
+      display: block;
+      color: var(--ตัวอักษร);
+    }
+    .บรรทัดหัวข้อ:first-child { margin-top: 0; }
   </style>
 </head>
 <body>
   <div id="nav"></div>
 
-  <div class="container">
-    <h1>ใส่ข้อมูลตัวอย่างลง Firestore</h1>
-    <p class="subtitle">
-      เครื่องมือชั่วคราวสำหรับสัปดาห์ที่ 6 · ไม่ใช่หน้าจอของระบบ · ใช้เสร็จแล้วลบไฟล์นี้ทิ้งได้
-    </p>
+  <main class="container container-detail">
+    <div class="page-head">
+      <div class="titles">
+        <h1>ใส่ข้อมูลตัวอย่างลง Firestore</h1>
+        <p class="subtitle">
+          เครื่องมือชั่วคราวสำหรับสัปดาห์ที่ 6 · ไม่ใช่หน้าจอของระบบ · ใช้เสร็จแล้วลบไฟล์นี้ทิ้งได้
+        </p>
+      </div>
+    </div>
 
     <div class="card">
-      <h2>จะเขียนอะไรลงไปบ้าง</h2>
-      <div class="field-row"><span class="k">users</span><span>3 ไฟล์ — u001 ถึง u003</span></div>
-      <div class="field-row"><span class="k">leaveTypes</span><span>3 ไฟล์ — lt001 ถึง lt003</span></div>
-      <div class="field-row"><span class="k">leaveRequests</span><span>5 ไฟล์ — lr001 ถึง lr005</span></div>
-      <div class="field-row"><span class="k">approvals</span><span>4 ไฟล์ — โฟลเดอร์ย่อยที่ซ้อนอยู่ในใบลาแต่ละใบ</span></div>
-      <p class="hint">
-        ข้อมูลทั้งหมดอ่านมาจาก <code>js/data.js</code> โดยตรง จึงตรงกับที่หน้าจออื่นใช้อยู่เป๊ะ
-      </p>
-
-      <div class="alert alert-warn">
-        ⚠️ <strong>กดปุ่มนี้แล้วข้อมูลเดิมที่ชื่อไฟล์เดียวกันจะถูกเขียนทับ</strong><br>
-        รันซ้ำได้ไม่เกิดข้อมูลซ้ำ แต่ถ้าคุณแก้อะไรไว้ใน Firebase Console จะกลับไปเป็นค่าตั้งต้นทั้งหมด
+      <div class="card-head">
+        <h2>จะเขียนอะไรลงไปบ้าง</h2>
       </div>
 
-      <div id="ข้อความเตือน" class="alert alert-error hidden"></div>
+      <!-- ชื่อโฟลเดอร์ตรงตาม CLAUDE.md ข้อ 1 เป๊ะ — เขียนติดกัน ไม่มีขีดล่าง -->
+      <div class="field-list">
+        <div class="field-row"><span class="k">users</span><span class="v">3 ไฟล์ — u001 ถึง u003</span></div>
+        <div class="field-row"><span class="k">leaveTypes</span><span class="v">3 ไฟล์ — lt001 ถึง lt003</span></div>
+        <div class="field-row"><span class="k">leaveRequests</span><span class="v">5 ไฟล์ — lr001 ถึง lr005</span></div>
+        <div class="field-row"><span class="k">approvals</span><span class="v">4 ไฟล์ — โฟลเดอร์ย่อยที่ซ้อนอยู่ในใบลาแต่ละใบ</span></div>
+      </div>
 
-      <div class="btn-row">
-        <button type="button" id="ปุ่มใส่ข้อมูล">ใส่ข้อมูลตัวอย่างลง Firestore</button>
-        <a class="btn btn-ghost" href="leave-requests.html">ไปหน้ารายการใบลา</a>
+      <div style="padding:16px 20px 0">
+        <p class="hint">
+          ข้อมูลทั้งหมดอ่านมาจาก <code>js/data.js</code> โดยตรง จึงตรงกับที่หน้าจออื่นใช้อยู่เป๊ะ
+        </p>
+
+        <div class="alert alert-warn" style="margin-top:14px">
+          <span data-ไอคอน="เตือน"></span>
+          <div>
+            <b>กดปุ่มนี้แล้วข้อมูลเดิมที่ชื่อไฟล์เดียวกันจะถูกเขียนทับ</b><br>
+            รันซ้ำได้ไม่เกิดข้อมูลซ้ำ แต่ถ้าคุณแก้อะไรไว้ใน Firebase Console จะกลับไปเป็นค่าตั้งต้นทั้งหมด
+          </div>
+        </div>
+
+        <div id="ข้อความเตือน" class="alert alert-error hidden" role="alert"></div>
+
+        <div class="btn-row" style="margin:18px 0 20px">
+          <button type="button" id="ปุ่มใส่ข้อมูล">ใส่ข้อมูลตัวอย่างลง Firestore</button>
+          <a class="btn btn-ghost" href="leave-requests.html">ไปหน้ารายการใบลา</a>
+        </div>
       </div>
     </div>
 
     <div class="card">
       <h2>ผลการทำงาน</h2>
-      <div id="บันทึกผล"></div>
-      <p class="hint" id="ยังไม่ได้เริ่ม">ยังไม่ได้เริ่ม — กดปุ่มด้านบนเพื่อเขียนข้อมูลลงฐาน</p>
+      <p class="hint" id="ยังไม่ได้เริ่ม" style="margin-bottom:0">
+        ยังไม่ได้เริ่ม — กดปุ่มด้านบนเพื่อเขียนข้อมูลลงฐาน
+      </p>
+      <div id="บันทึกผล" style="margin-top:14px" aria-live="polite"></div>
     </div>
-  </div>
+  </main>
 </body>
 </html>

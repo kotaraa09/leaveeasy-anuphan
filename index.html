@@ -3,48 +3,132 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="LeaveEasy ระบบขอลาออนไลน์ — พนักงานยื่นใบลา หัวหน้าพิจารณา แล้วบันทึกผลไว้ที่เดียว">
   <title>LeaveEasy ระบบขอลาออนไลน์</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%230071e3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5.2' width='22' height='19.8' rx='6.2'/%3E%3Cpath d='M3 11.4h22M9.6 3.4v3.6M18.4 3.4v3.6'/%3E%3Cpath d='m10 18.1 2.6 2.6 5.4-5.6'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300..700&display=swap">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/icons.js" defer></script>
+  <script src="js/util.js" defer></script>
   <script src="js/nav.js" defer></script>
-  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/index.js"></script>
 </head>
 <body>
   <div id="nav"></div>
 
-  <div class="container">
-    <h1>LeaveEasy ระบบขอลาออนไลน์</h1>
-    <p class="subtitle">พนักงานยื่นใบลา หัวหน้าพิจารณา อนุมัติหรือไม่อนุมัติ แล้วบันทึกผลไว้ที่เดียว</p>
+  <main class="container">
 
-    <div class="card">
-      <h2>หน้าจอของระบบ</h2>
-      <div class="btn-row">
-        <a class="btn" href="leave-requests.html">รายการใบลา</a>
-        <a class="btn btn-ghost" href="new-leave-request.html">ยื่นใบลาใหม่</a>
-        <a class="btn btn-ghost" href="leave-types.html">จัดการประเภทการลา</a>
+    <!-- ── ระหว่างรอ Firebase ตอบว่าใครล็อกอินอยู่ ──
+         ต้องมีอะไรให้เห็นก่อนเสมอ ไม่งั้นหน้าจะขาววาบหนึ่งจังหวะทุกครั้งที่เปิด -->
+    <div id="กำลังตรวจสอบ">
+      <div class="skeleton sk-line" style="width:220px;height:30px;margin-bottom:12px"></div>
+      <div class="skeleton sk-line" style="width:320px;margin-bottom:28px"></div>
+      <div class="stat-row">
+        <div class="skeleton" style="height:98px;border-radius:16px"></div>
+        <div class="skeleton" style="height:98px;border-radius:16px"></div>
+        <div class="skeleton" style="height:98px;border-radius:16px"></div>
+        <div class="skeleton" style="height:98px;border-radius:16px"></div>
       </div>
     </div>
 
-    <div class="card">
-      <h2>ผู้ใช้ของระบบ 3 บทบาท</h2>
-      <table>
-        <thead><tr><th>บทบาท</th><th>รหัสในระบบ</th><th>ทำอะไรได้</th></tr></thead>
-        <tbody>
-          <tr><td>🙋 ผู้ขอลา</td><td>employee</td><td>ยื่นใบลา ดูใบของตัวเอง ลบใบที่ยังรอพิจารณา</td></tr>
-          <tr><td>✅ ผู้อนุมัติ</td><td>manager</td><td>ดูใบลาทุกใบ อนุมัติหรือไม่อนุมัติ เขียนความเห็น</td></tr>
-          <tr><td>🧾 ฝ่ายบุคคล</td><td>hr</td><td>ทำได้ทุกอย่างที่ผู้อนุมัติทำได้ และจัดการประเภทการลา</td></tr>
-        </tbody>
-      </table>
+    <!-- ════════════════════════════════════════════════════════
+         หน้าต้อนรับ — เห็นเฉพาะคนที่ยังไม่ได้ล็อกอิน
+         ════════════════════════════════════════════════════════ -->
+    <div id="หน้าต้อนรับ" class="hidden">
+      <div class="hero">
+        <h1>ลางาน จบใน<br>สามขั้นตอน</h1>
+        <p>ยื่นใบลา รอหัวหน้าพิจารณา แล้วดูผลได้ทุกเมื่อ — ไม่ต้องตามถามกันในแชตอีก</p>
+        <div class="btn-row">
+          <a class="btn" href="login.html">เข้าสู่ระบบ</a>
+          <a class="btn btn-ghost" href="signup.html">สมัครสมาชิก</a>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <section class="card">
+          <h2>ใบลาหนึ่งใบเดินทางอย่างไร</h2>
+          <p class="hint">ทุกใบเริ่มที่ <b>รอพิจารณา</b> เสมอ และเมื่อพิจารณาแล้วจะเปลี่ยนสถานะต่อไม่ได้</p>
+
+          <div class="flow" style="margin-top:18px">
+            <div class="step">
+              <span class="n" data-ไอคอน="เพิ่ม"></span>
+              <div>
+                <h3>ผู้ขอลายื่นใบ</h3>
+                <p>กรอกหัวข้อ เหตุผล ประเภทการลา และช่วงวันที่ ใบใหม่ได้สถานะ
+                  <span class="badge badge-รอพิจารณา">รอพิจารณา</span> ทันที</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="n" data-ไอคอน="ความเห็น"></span>
+              <div>
+                <h3>ผู้อนุมัติอ่านและเขียนความเห็น</h3>
+                <p>ความเห็นถูกเก็บไว้ในใบนั้นตลอดไป — และต้องมีความเห็นอย่างน้อยหนึ่งข้อ
+                  ก่อนจึงจะกดไม่อนุมัติได้</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="n" data-ไอคอน="ถูก"></span>
+              <div>
+                <h3>ผลถูกบันทึกถาวร</h3>
+                <p>สถานะเปลี่ยนเป็น <span class="badge badge-อนุมัติ">อนุมัติ</span>
+                  หรือ <span class="badge badge-ไม่อนุมัติ">ไม่อนุมัติ</span>
+                  แล้วทุกคนที่เกี่ยวข้องเห็นตรงกัน</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>ใครทำอะไรได้บ้าง</h2>
+          <p class="hint">สมัครใหม่จะได้บทบาทผู้ขอลาเสมอ · เปลี่ยนบทบาทได้โดยฝ่ายบุคคล</p>
+
+          <div class="roles" style="margin-top:18px">
+            <div class="role" data-ไอคอน="คน">
+              <b>ผู้ขอลา <span class="pill">employee</span></b>
+              <p>ยื่นใบลา ดูใบของตัวเอง และลบใบที่ยังรอพิจารณาอยู่ได้</p>
+            </div>
+            <div class="role" data-ไอคอน="ผู้อนุมัติ">
+              <b>ผู้อนุมัติ <span class="pill">manager</span></b>
+              <p>ดูใบลาทุกใบ เขียนความเห็น และตัดสินอนุมัติหรือไม่อนุมัติ</p>
+            </div>
+            <div class="role" data-ไอคอน="ฝ่ายบุคคล">
+              <b>ฝ่ายบุคคล <span class="pill">hr</span></b>
+              <p>ทำได้ทุกอย่างที่ผู้อนุมัติทำได้ และเป็นคนเดียวที่จัดการประเภทการลา</p>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
 
-    <div class="card">
-      <h2>สถานะของใบลามี 3 ค่า</h2>
-      <p>
-        <span class="badge badge-รอพิจารณา">รอพิจารณา</span> →
-        <span class="badge badge-อนุมัติ">อนุมัติ</span> หรือ
-        <span class="badge badge-ไม่อนุมัติ">ไม่อนุมัติ</span>
-      </p>
-      <p class="hint">ใบที่พิจารณาแล้ว เปลี่ยนสถานะต่อไม่ได้</p>
+    <!-- ════════════════════════════════════════════════════════
+         แดชบอร์ด — เห็นเฉพาะคนที่ล็อกอินแล้ว · js/index.js เติมข้อมูลให้
+         ════════════════════════════════════════════════════════ -->
+    <div id="แดชบอร์ด" class="hidden">
+      <div class="page-head">
+        <div class="titles">
+          <h1 id="คำทักทาย">สวัสดี</h1>
+          <p class="subtitle" id="สรุปสั้น"></p>
+        </div>
+        <div class="btn-row">
+          <a class="btn" href="new-leave-request.html" id="ปุ่มยื่นใบลา">ยื่นใบลาใหม่</a>
+        </div>
+      </div>
+
+      <div class="stat-row" id="กล่องตัวเลข"></div>
+
+      <section class="card card-flush">
+        <div class="card-head">
+          <h2 id="หัวรายการ">ใบลาล่าสุด</h2>
+          <a class="btn btn-ghost btn-sm" href="leave-requests.html" id="ลิงก์ดูทั้งหมด">ดูทั้งหมด</a>
+        </div>
+        <div id="รายการสั้น"></div>
+      </section>
     </div>
-  </div>
+
+  </main>
 </body>
 </html>

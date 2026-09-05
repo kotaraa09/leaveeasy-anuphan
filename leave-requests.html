@@ -3,8 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <title>รายการใบลา · LeaveEasy</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%230071e3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5.2' width='22' height='19.8' rx='6.2'/%3E%3Cpath d='M3 11.4h22M9.6 3.4v3.6M18.4 3.4v3.6'/%3E%3Cpath d='m10 18.1 2.6 2.6 5.4-5.6'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300..700&display=swap">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/icons.js" defer></script>
   <script src="js/util.js" defer></script>
   <script src="js/nav.js" defer></script>
   <script type="module" src="js/leave-requests.js"></script>
@@ -12,34 +19,45 @@
 <body>
   <div id="nav"></div>
 
-  <div class="container">
-    <h1>รายการใบลา</h1>
-    <p class="subtitle">ใบขอลาทั้งหมดในระบบ กดที่แถวเพื่อดูรายละเอียด</p>
-    <p id="จำนวนใบลา" class="hint"></p>
-
-    <div class="btn-row">
-      <a class="btn" href="new-leave-request.html">+ ยื่นใบลาใหม่</a>
+  <main class="container">
+    <div class="page-head">
+      <div class="titles">
+        <h1>รายการใบลา</h1>
+        <p class="subtitle" id="คำอธิบายหน้า">ใบขอลาทั้งหมดในระบบ กดที่แถวเพื่อดูรายละเอียด</p>
+      </div>
+      <div class="btn-row">
+        <a class="btn" href="new-leave-request.html"><span data-ไอคอน="เพิ่ม"></span>ยื่นใบลาใหม่</a>
+      </div>
     </div>
 
-    <div id="แถบตัวกรอง" class="card filter-row hidden" style="margin-top:16px">
-      <div class="filter-field">
-        <label for="ตัวกรองสถานะ">สถานะ</label>
-        <select id="ตัวกรองสถานะ">
-          <option value="">ทุกสถานะ</option>
-          <option value="รอพิจารณา">รอพิจารณา</option>
-          <option value="อนุมัติ">อนุมัติ</option>
-          <option value="ไม่อนุมัติ">ไม่อนุมัติ</option>
-        </select>
+    <!-- ── แถบเครื่องมือ ── ซ่อนไว้ก่อนจนกว่าจะรู้ว่ามีใบลาให้กรองจริง ──
+         แถบแบ่งสถานะเป็นตัวกรองหลัก จึงอยู่ซ้ายสุดและกว้างที่สุด
+         ส่วนประเภทกับการเรียงเป็นตัวช่วยรอง ถูกยุบเป็นรายการเลื่อนลงเล็ก ๆ ไว้ทางขวา -->
+    <div id="แถบตัวกรอง" class="toolbar hidden">
+      <div class="segmented grow" id="ตัวกรองสถานะ" role="radiogroup" aria-label="กรองตามสถานะ" style="--seg-count:4">
+        <div class="thumb" aria-hidden="true"></div>
+
+        <input type="radio" name="กรองสถานะ" id="สถานะ-ทั้งหมด" value="" checked>
+        <label for="สถานะ-ทั้งหมด">ทั้งหมด<span class="n"></span></label>
+
+        <input type="radio" name="กรองสถานะ" id="สถานะ-รอ" value="รอพิจารณา">
+        <label for="สถานะ-รอ">รอพิจารณา<span class="n"></span></label>
+
+        <input type="radio" name="กรองสถานะ" id="สถานะ-ผ่าน" value="อนุมัติ">
+        <label for="สถานะ-ผ่าน">อนุมัติ<span class="n"></span></label>
+
+        <input type="radio" name="กรองสถานะ" id="สถานะ-ไม่ผ่าน" value="ไม่อนุมัติ">
+        <label for="สถานะ-ไม่ผ่าน">ไม่อนุมัติ<span class="n"></span></label>
       </div>
 
-      <div class="filter-field">
-        <label for="ตัวกรองประเภท">ประเภทการลา</label>
+      <div class="field-inline">
+        <label for="ตัวกรองประเภท">ประเภท</label>
         <select id="ตัวกรองประเภท">
           <option value="">ทุกประเภท</option>
         </select>
       </div>
 
-      <div class="filter-field">
+      <div class="field-inline">
         <label for="การเรียง">เรียงตาม</label>
         <select id="การเรียง">
           <option value="ยื่นใหม่สุด">วันที่ยื่น · ใหม่สุดก่อน</option>
@@ -49,14 +67,17 @@
         </select>
       </div>
 
-      <div class="filter-field filter-reset">
-        <button type="button" id="ปุ่มล้างตัวกรอง" class="btn-ghost hidden">ล้างตัวกรอง</button>
-      </div>
+      <button type="button" id="ปุ่มล้างตัวกรอง" class="btn-ghost btn-sm hidden">ล้างตัวกรอง</button>
     </div>
 
-    <div id="ผลลัพธ์" class="card" style="margin-top:16px">
-      <p>กำลังโหลดข้อมูล…</p>
-    </div>
-  </div>
+    <p id="จำนวนใบลา" class="hint" style="margin:0 0 12px" aria-live="polite"></p>
+
+    <section class="card card-flush" id="ผลลัพธ์">
+      <div class="sk-row"><div class="skeleton sk-line" style="width:38%"></div><div class="skeleton sk-line" style="width:82px;margin-left:auto"></div></div>
+      <div class="sk-row"><div class="skeleton sk-line" style="width:46%"></div><div class="skeleton sk-line" style="width:82px;margin-left:auto"></div></div>
+      <div class="sk-row"><div class="skeleton sk-line" style="width:32%"></div><div class="skeleton sk-line" style="width:82px;margin-left:auto"></div></div>
+      <div class="sk-row"><div class="skeleton sk-line" style="width:42%"></div><div class="skeleton sk-line" style="width:82px;margin-left:auto"></div></div>
+    </section>
+  </main>
 </body>
 </html>
