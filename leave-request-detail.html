@@ -35,5 +35,17 @@
       <a class="btn btn-ghost" href="leave-requests.html">← กลับไปหน้ารายการ</a>
     </div>
   </div>
+
+  <!-- หน้าต่างถามยืนยันก่อนลบ · เป็น <dialog> ของ HTML ล้วน ไม่ต้องใช้ไลบรารีเสริม
+       ปิดหน้าต่างด้วยปุ่มยกเลิกหรือปุ่ม ESC ก็ได้ ทั้งสองทางแปลว่า "ไม่ลบ" -->
+  <dialog id="หน้าต่างยืนยันลบ">
+    <h2>ยืนยันการลบใบลา</h2>
+    <p id="ข้อความยืนยันลบ"></p>
+    <p class="hint">ลบแล้วกู้คืนไม่ได้ · ความเห็นทั้งหมดในใบนี้จะถูกลบไปพร้อมกัน</p>
+    <div class="btn-row">
+      <button type="button" class="btn-danger" id="ปุ่มยืนยันลบ">ลบใบลานี้</button>
+      <button type="button" class="btn-ghost" id="ปุ่มยกเลิกลบ">ยกเลิก</button>
+    </div>
+  </dialog>
 </body>
 </html>

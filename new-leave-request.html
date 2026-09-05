@@ -8,7 +8,7 @@
   <script src="js/util.js" defer></script>
   <script src="js/nav.js" defer></script>
   <script src="js/data.js" defer></script>
-  <script src="js/new-leave-request.js" defer></script>
+  <script type="module" src="js/new-leave-request.js"></script>
 </head>
 <body>
   <div id="nav"></div>
@@ -22,10 +22,10 @@
 
       <form id="ฟอร์มใบลา">
         <label for="title">หัวข้อ</label>
-        <input type="text" id="title" placeholder="เช่น ลาพักร้อนไปเที่ยวกับครอบครัว">
+        <input type="text" id="title" maxlength="100" placeholder="เช่น ลาพักร้อนไปเที่ยวกับครอบครัว">
 
         <label for="reason">เหตุผลการลา</label>
-        <textarea id="reason" placeholder="เล่าเหตุผลสั้น ๆ ให้หัวหน้าเข้าใจ"></textarea>
+        <textarea id="reason" maxlength="500" placeholder="เล่าเหตุผลสั้น ๆ ให้หัวหน้าเข้าใจ"></textarea>
 
         <label for="leaveTypeId">ประเภทการลา</label>
         <select id="leaveTypeId">

@@ -21,6 +21,39 @@
       <a class="btn" href="new-leave-request.html">+ ยื่นใบลาใหม่</a>
     </div>
 
+    <div id="แถบตัวกรอง" class="card filter-row hidden" style="margin-top:16px">
+      <div class="filter-field">
+        <label for="ตัวกรองสถานะ">สถานะ</label>
+        <select id="ตัวกรองสถานะ">
+          <option value="">ทุกสถานะ</option>
+          <option value="รอพิจารณา">รอพิจารณา</option>
+          <option value="อนุมัติ">อนุมัติ</option>
+          <option value="ไม่อนุมัติ">ไม่อนุมัติ</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="ตัวกรองประเภท">ประเภทการลา</label>
+        <select id="ตัวกรองประเภท">
+          <option value="">ทุกประเภท</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="การเรียง">เรียงตาม</label>
+        <select id="การเรียง">
+          <option value="ยื่นใหม่สุด">วันที่ยื่น · ใหม่สุดก่อน</option>
+          <option value="ยื่นเก่าสุด">วันที่ยื่น · เก่าสุดก่อน</option>
+          <option value="ลาใหม่สุด">วันที่เริ่มลา · ใหม่สุดก่อน</option>
+          <option value="ลาเก่าสุด">วันที่เริ่มลา · เก่าสุดก่อน</option>
+        </select>
+      </div>
+
+      <div class="filter-field filter-reset">
+        <button type="button" id="ปุ่มล้างตัวกรอง" class="btn-ghost hidden">ล้างตัวกรอง</button>
+      </div>
+    </div>
+
     <div id="ผลลัพธ์" class="card" style="margin-top:16px">
       <p>กำลังโหลดข้อมูล…</p>
     </div>
