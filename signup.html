@@ -3,41 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <title>สมัครสมาชิก · LeaveEasy</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%230071e3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5.2' width='22' height='19.8' rx='6.2'/%3E%3Cpath d='M3 11.4h22M9.6 3.4v3.6M18.4 3.4v3.6'/%3E%3Cpath d='m10 18.1 2.6 2.6 5.4-5.6'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300..700&display=swap">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/icons.js" defer></script>
+  <script src="js/util.js" defer></script>
   <script src="js/nav.js" defer></script>
   <script type="module" src="js/signup.js"></script>
 </head>
 <body>
   <div id="nav"></div>
 
-  <div class="container container-narrow">
-    <h1>สมัครสมาชิก</h1>
-    <p class="subtitle">สมัครแล้วจะได้บทบาท ผู้ขอลา · ถ้าต้องการบทบาทอื่นให้แจ้งฝ่ายบุคคล</p>
+  <main class="auth">
+    <div class="auth-head">
+      <span data-เครื่องหมาย></span>
+      <h1>สมัครสมาชิก</h1>
+      <p>สมัครเสร็จใช้ยื่นใบลาได้ทันที</p>
+    </div>
 
     <div class="card">
-      <div id="ข้อความเตือน" class="alert alert-error hidden"></div>
+      <div id="ข้อความเตือน" class="alert alert-error hidden" role="alert"></div>
 
-      <form id="ฟอร์มสมัคร">
-        <label for="name">ชื่อ-นามสกุล</label>
-        <input type="text" id="name" maxlength="80" placeholder="เช่น สมชาย ใจดี">
+      <form id="ฟอร์มสมัคร" novalidate>
+        <div class="field">
+          <label for="name">ชื่อ-นามสกุล</label>
+          <input type="text" id="name" maxlength="80" autocomplete="name"
+                 placeholder="เช่น สมชาย ใจดี">
+          <!-- บอกล่วงหน้าว่าชื่อนี้จะไปโผล่ที่ไหน คนจะได้ไม่กรอกชื่อเล่นแล้วมาแก้ทีหลัง -->
+          <p class="hint">ชื่อนี้จะขึ้นบนใบลาทุกใบที่คุณยื่น</p>
+        </div>
 
-        <label for="email">อีเมล</label>
-        <input type="email" id="email" autocomplete="username" placeholder="you@example.com">
+        <div class="field">
+          <label for="email">อีเมล</label>
+          <input type="email" id="email" autocomplete="username"
+                 inputmode="email" autocapitalize="off" spellcheck="false"
+                 placeholder="you@example.com">
+        </div>
 
-        <label for="password">รหัสผ่าน</label>
-        <input type="password" id="password" autocomplete="new-password" placeholder="อย่างน้อย 6 ตัวอักษร">
+        <div class="field">
+          <label for="password">รหัสผ่าน</label>
+          <div class="pw">
+            <input type="password" id="password" autocomplete="new-password"
+                   placeholder="ตั้งรหัสผ่านใหม่">
+          </div>
+          <!-- เกณฑ์ขึ้นตั้งแต่ยังไม่พิมพ์ แล้วติ๊กถูกตอนผ่าน · js/signup.js เป็นคนสลับให้
+               ดีกว่าปล่อยให้กดสมัครไปก่อนแล้วค่อยบอกว่ารหัสผ่านสั้นไป -->
+          <p class="rule" id="เกณฑ์ความยาว" aria-live="polite">
+            <span data-ไอคอน="วงกลม" class="ico-sm"></span>ยาวอย่างน้อย 6 ตัวอักษร
+          </p>
+        </div>
 
-        <label for="password2">รหัสผ่านอีกครั้ง</label>
-        <input type="password" id="password2" autocomplete="new-password" placeholder="พิมพ์รหัสผ่านเดิมซ้ำ">
+        <div class="field">
+          <label for="password2">รหัสผ่านอีกครั้ง</label>
+          <div class="pw">
+            <input type="password" id="password2" autocomplete="new-password"
+                   placeholder="พิมพ์รหัสผ่านเดิมซ้ำ">
+          </div>
+          <p class="rule" id="เกณฑ์ตรงกัน" aria-live="polite">
+            <span data-ไอคอน="วงกลม" class="ico-sm"></span>ตรงกับรหัสผ่านด้านบน
+          </p>
+        </div>
 
         <div class="btn-row">
           <button type="submit" id="ปุ่มสมัคร">สมัครสมาชิก</button>
         </div>
       </form>
 
-      <p class="hint">มีบัญชีอยู่แล้ว? <a href="login.html">เข้าสู่ระบบ</a></p>
+      <!-- บอกเรื่องบทบาทตรงนี้ ไม่ใช่ใต้หัวข้อหน้า เพราะเป็นผลของการกดปุ่ม
+           ไม่ใช่สิ่งที่ต้องรู้ก่อนเริ่มกรอก (CLAUDE.md ข้อ 4 — สมัครเองได้ employee เสมอ) -->
+      <p class="hint" style="margin-top:16px">
+        <span data-ไอคอน="ข้อมูล" class="ico-sm"></span>
+        บัญชีที่สมัครเองจะได้บทบาท <b>ผู้ขอลา</b> · ถ้าต้องการบทบาทอื่นให้แจ้งฝ่ายบุคคล
+      </p>
     </div>
-  </div>
+
+    <p class="auth-alt">มีบัญชีอยู่แล้ว? <a href="login.html">เข้าสู่ระบบ</a></p>
+  </main>
 </body>
 </html>

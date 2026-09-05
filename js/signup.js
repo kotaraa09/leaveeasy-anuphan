@@ -34,6 +34,9 @@ import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.18.0/firebase
     return;
   }
 
+  ติดปุ่มดูรหัสผ่าน();                    // js/util.js — ติดปุ่มลืมตาให้ทั้งสองช่อง
+  ติดเกณฑ์รหัสผ่านสด();
+
   ฟอร์ม.addEventListener("submit", async function (e) {
     e.preventDefault();
     ซ่อนคำเตือน();
@@ -85,12 +88,14 @@ import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.18.0/firebase
 
   // บัญชีเกิดแล้วแต่โปรไฟล์ยังไม่ลงฐาน — สถานะครึ่ง ๆ กลาง ๆ ที่ต้องบอกให้ชัด
   function บอกว่าโปรไฟล์ยังไม่ถูกบันทึก(ข้อผิดพลาด, uid, name, email) {
+    กล่องเตือน.className = "alert alert-warn";
     กล่องเตือน.innerHTML =
-      "⚠️ <strong>สร้างบัญชีสำเร็จแล้ว แต่บันทึกชื่อลงฐานข้อมูลไม่สำเร็จ</strong><br>" +
+      window.ไอคอน("เตือน") +
+      "<div><strong>สร้างบัญชีสำเร็จแล้ว แต่บันทึกชื่อลงฐานข้อมูลไม่สำเร็จ</strong><br>" +
       "สาเหตุ: " + esc(แปลข้อผิดพลาดAuth(ข้อผิดพลาด)) + "<br>" +
       "ตอนนี้คุณล็อกอินอยู่แล้ว แต่ระบบยังไม่รู้ชื่อและบทบาทของคุณ — " +
       "กดปุ่มข้างล่างเพื่อบันทึกอีกครั้ง (ไม่ต้องสมัครใหม่ อีเมลนี้ถูกใช้ไปแล้ว)" +
-      '<div class="btn-row"><button type="button" id="ปุ่มบันทึกโปรไฟล์ซ้ำ">บันทึกโปรไฟล์อีกครั้ง</button></div>';
+      '<div class="btn-row"><button type="button" id="ปุ่มบันทึกโปรไฟล์ซ้ำ">บันทึกโปรไฟล์อีกครั้ง</button></div></div>';
     กล่องเตือน.classList.remove("hidden");
 
     document.getElementById("ปุ่มบันทึกโปรไฟล์ซ้ำ").addEventListener("click", function () {
@@ -102,14 +107,40 @@ import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.18.0/firebase
     กำลังส่ง(false);
   }
 
+  // ── เกณฑ์รหัสผ่านที่ติ๊กถูกให้เห็นระหว่างพิมพ์ ──
+  // บอกตอนที่ยังแก้ได้ง่าย ดีกว่ารอให้กดสมัครแล้วค่อยขึ้นข้อความสีแดง
+  // ด่านตรวจตอนกดสมัครยังอยู่ครบ ส่วนนี้เพิ่มมาเพื่อบอกล่วงหน้าเท่านั้น
+  function ติดเกณฑ์รหัสผ่านสด() {
+    var ช่องรหัส = document.getElementById("password");
+    var ช่องซ้ำ = document.getElementById("password2");
+
+    function ตรวจ() {
+      สลับ("เกณฑ์ความยาว", ช่องรหัส.value.length >= รหัสผ่านสั้นสุด);
+      สลับ("เกณฑ์ตรงกัน",
+           ช่องซ้ำ.value.length > 0 && ช่องซ้ำ.value === ช่องรหัส.value);
+    }
+
+    // สลับทั้งสีและรูปไอคอน — คนที่แยกสีไม่ออกต้องเห็นความต่างจากรูปได้ด้วย
+    function สลับ(รหัส, ผ่าน) {
+      var บรรทัด = document.getElementById(รหัส);
+      if (!บรรทัด) return;
+      บรรทัด.classList.toggle("ผ่าน", ผ่าน);
+      var รูป = บรรทัด.querySelector(".ico");
+      if (รูป) รูป.outerHTML = window.ไอคอน(ผ่าน ? "ถูก" : "วงกลม", "ico-sm");
+    }
+
+    ช่องรหัส.addEventListener("input", ตรวจ);
+    ช่องซ้ำ.addEventListener("input", ตรวจ);
+  }
+
+  // ใช้ตัวช่วยกลางจาก js/util.js กล่องเตือนจึงมีไอคอนและการจัดวางเหมือนทุกหน้า
   function เตือน(ข้อความ, ช่อง) {
-    กล่องเตือน.textContent = "⚠️ " + ข้อความ;
-    กล่องเตือน.classList.remove("hidden");
+    แสดงเตือน(กล่องเตือน, ข้อความ);
     if (ช่อง) document.getElementById(ช่อง).focus();
   }
 
   function ซ่อนคำเตือน() {
-    กล่องเตือน.classList.add("hidden");
+    ซ่อนเตือน(กล่องเตือน);
   }
 
   function กำลังส่ง(กำลัง, ข้อความ) {

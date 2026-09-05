@@ -9,9 +9,19 @@
 //      เพราะ requesterId: "u001" ต้องชี้ไปเจอไฟล์จริง ไม่งั้นระบบพังแบบเงียบ ๆ
 //   3. เขียนทีเดียวพร้อมกันทั้งชุด (batch) — สำเร็จทั้งหมด หรือไม่สำเร็จเลย
 //      กันข้อมูลค้างครึ่ง ๆ กลาง ๆ ตอนเน็ตหลุดกลางคัน
+//
+// 🔑 ป้าย "__ฉัน__" ใน js/data.js จะถูกเปลี่ยนเป็น uid กับชื่อจริงของคนที่กดปุ่ม
+//    ใบลาตัวอย่างจึงเป็นของบัญชีจริง และโผล่ในหน้า "รายการใบลา" ของคนนั้นทันที
+//
+// ⚠️ หน้านี้ใช้ได้ก็ต่อเมื่อกฎใน Firebase Console ยังยอมให้เขียน
+//    กฎรายบทบาทชุดใหม่ใน firestore.rules ปฏิเสธข้อมูลตัวอย่างบางส่วน เช่น
+//       · users/u001 — ชื่อไฟล์ไม่ใช่ uid ของบัญชีจริง
+//       · ใบที่สถานะเป็น อนุมัติ / ไม่อนุมัติ ตั้งแต่แรก หรือมีผู้อนุมัติมาแล้ว
+//    ให้ใส่ข้อมูลตัวอย่าง "ก่อน" กด Publish กฎชุดใหม่ หรือใส่จาก Firebase Console แทน
 // ─────────────────────────────────────────────────────────────
 
 import { db } from "./firebase-init.js";
+import { ต้องล็อกอิน } from "./auth.js";
 import { doc, writeBatch } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 (function () {
@@ -29,6 +39,10 @@ import { doc, writeBatch } from "https://www.gstatic.com/firebasejs/12.18.0/fire
     กล่องเตือน.classList.add("hidden");
     กล่องบันทึก.innerHTML = "";
     if (ข้อความยังไม่เริ่ม) ข้อความยังไม่เริ่ม.remove();
+
+    // ── ใครกดปุ่มนี้ คนนั้นคือเจ้าของใบลาตัวอย่าง ──
+    // ต้องรู้ทั้ง uid (เอาไปใส่ requesterId) และชื่อ (จดซ้ำไว้คู่กัน เพราะ Firestore ไม่มี JOIN)
+    const ผู้ใช้ = await ต้องล็อกอิน();
 
     const ข้อมูล = window.LEAVE_DATA;
     if (!ข้อมูล) {
@@ -59,12 +73,14 @@ import { doc, writeBatch } from "https://www.gstatic.com/firebasejs/12.18.0/fire
         จำนวน++;
       });
 
-      // 📁 leaveRequests
-      หัวข้อ("📁 leaveRequests");
+      // 📁 leaveRequests — ใบที่ติดป้าย __ฉัน__ จะกลายเป็นใบของบัญชีที่กดปุ่ม
+      หัวข้อ("📁 leaveRequests  (ใบของฉันผูกกับ " + ผู้ใช้.name + ")");
       ข้อมูล.leaveRequests.forEach(function (ใบ) {
         const { id, ...ช่องข้อมูล } = ใบ;
-        ชุดเขียน.set(doc(db, "leaveRequests", id), ช่องข้อมูล);
-        บรรทัด("leaveRequests/" + id + "  —  " + ใบ.status + "  —  " + ใบ.title);
+        const ค่าจริง = แทนป้ายฉัน(ช่องข้อมูล, ผู้ใช้, ข้อมูล);
+        ชุดเขียน.set(doc(db, "leaveRequests", id), ค่าจริง);
+        บรรทัด("leaveRequests/" + id + "  —  " + ใบ.status + "  —  " + ใบ.title +
+               "  —  ผู้ขอลา: " + ค่าจริง.requesterName);
         จำนวน++;
       });
 
@@ -73,7 +89,7 @@ import { doc, writeBatch } from "https://www.gstatic.com/firebasejs/12.18.0/fire
       หัวข้อ("📁 leaveRequests/{ใบลา}/approvals");
       ข้อมูล.approvals.forEach(function (ความเห็น) {
         const { id, requestId, ...ช่องข้อมูล } = ความเห็น;
-        ชุดเขียน.set(doc(db, "leaveRequests", requestId, "approvals", id), ช่องข้อมูล);
+        ชุดเขียน.set(doc(db, "leaveRequests", requestId, "approvals", id), แทนป้ายฉัน(ช่องข้อมูล, ผู้ใช้, ข้อมูล));
         บรรทัด("leaveRequests/" + requestId + "/approvals/" + id + "  —  " + ความเห็น.authorName);
         จำนวน++;
       });
@@ -92,14 +108,34 @@ import { doc, writeBatch } from "https://www.gstatic.com/firebasejs/12.18.0/fire
     คืนปุ่ม();
   }
 
+  // ── เปลี่ยนป้าย "__ฉัน__" เป็น uid และชื่อจริงของคนที่กดปุ่ม ──
+  // 🔁 เปลี่ยนเป็นคู่เสมอ ทั้งช่องรหัสและช่องชื่อที่จดซ้ำไว้ข้าง ๆ
+  //    ถ้าเปลี่ยนแต่รหัส หน้าจอจะขึ้นว่า __ฉัน__ แทนชื่อคน
+  function แทนป้ายฉัน(ช่องข้อมูล, ผู้ใช้, ข้อมูล) {
+    const คู่รหัสกับชื่อ = [
+      ["requesterId", "requesterName"],
+      ["approverId", "approverName"],
+      ["authorId", "authorName"]
+    ];
+    const ผล = Object.assign({}, ช่องข้อมูล);
+
+    คู่รหัสกับชื่อ.forEach(function (คู่) {
+      if (ผล[คู่[0]] === ข้อมูล.รหัสฉัน) {
+        ผล[คู่[0]] = ผู้ใช้.uid;
+        ผล[คู่[1]] = ผู้ใช้.name;
+      }
+    });
+    return ผล;
+  }
+
   // ── แปลข้อผิดพลาดของ Firebase ให้อ่านรู้เรื่อง ──
   function แปลข้อผิดพลาด(e) {
     const รหัส = (e && e.code) || "";
 
     if (รหัส === "permission-denied") {
-      return "Firestore ปฏิเสธการเขียน — แปลว่ากฎความปลอดภัยยังปิดอยู่ " +
-             "ให้เข้า Firebase Console → Firestore Database → แท็บ Rules " +
-             'แล้วตรวจว่าเลือก Test mode ไว้ (สัปดาห์ที่ 7 จะกลับมาปิดกฎนี้ให้ถูกต้อง)';
+      return "Firestore ปฏิเสธการเขียน — กฎรายบทบาทใน firestore.rules ไม่ยอมให้ใส่ข้อมูลตัวอย่างชุดนี้จากหน้าเว็บ " +
+             "(เช่น ไฟล์ users/u001 ที่ชื่อไฟล์ไม่ใช่ uid ของบัญชีจริง หรือใบที่สถานะไม่ใช่ รอพิจารณา ตั้งแต่แรก) " +
+             "ทางออก: ใส่ข้อมูลตัวอย่างก่อนกด Publish กฎชุดใหม่ หรือใส่จาก Firebase Console ซึ่งข้ามกฎได้";
     }
     if (รหัส === "unavailable" || รหัส === "failed-precondition") {
       return "ต่อฐานข้อมูลไม่ได้ — ตรวจว่าสร้าง Firestore Database ใน Console แล้ว " +
@@ -145,9 +181,9 @@ import { doc, writeBatch } from "https://www.gstatic.com/firebasejs/12.18.0/fire
     กล่อง.textContent = ข้อความ;
   }
 
+  // ใช้ตัวช่วยกลางจาก js/util.js กล่องเตือนจึงมีไอคอนและการจัดวางเหมือนทุกหน้า
   function เตือน(ข้อความ) {
-    กล่องเตือน.textContent = "⚠️ " + ข้อความ;
-    กล่องเตือน.classList.remove("hidden");
+    แสดงเตือน(กล่องเตือน, ข้อความ);
   }
 
   function คืนปุ่ม() {

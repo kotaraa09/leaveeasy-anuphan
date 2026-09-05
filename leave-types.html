@@ -8,8 +8,9 @@
   <script src="js/util.js" defer></script>
   <script src="js/nav.js" defer></script>
   <script src="js/data.js" defer></script>
-  <script src="js/leave-types.js" defer></script>
-  <script type="module" src="js/auth.js"></script>
+  <!-- leave-types.js เป็นมอดูล เพราะต้องถามบทบาทจาก js/auth.js ก่อนวาดปุ่มจัดการ
+       และมอดูลจะทำงานหลังสคริปต์ defer ข้างบนเสมอ window.LEAVE_DATA จึงพร้อมแล้ว -->
+  <script type="module" src="js/leave-types.js"></script>
 </head>
 <body>
   <div id="nav"></div>
@@ -18,7 +19,13 @@
     <h1>จัดการประเภทการลา</h1>
     <p class="subtitle">ประเภทที่เพิ่มที่นี่ จะไปโผล่ในรายการเลื่อนลงของหน้ายื่นใบลาใหม่</p>
 
-    <div class="card">
+    <!-- คนที่ไม่ใช่ฝ่ายบุคคลเห็นข้อความนี้แทนกล่องเพิ่ม จะได้รู้ว่าไม่ใช่หน้าเสีย -->
+    <div class="alert alert-warn hidden" data-เฉพาะบทบาท="employee manager">
+      🔒 เฉพาะฝ่ายบุคคลเท่านั้นที่เพิ่ม แก้ หรือลบประเภทการลาได้ — หน้านี้จึงเปิดให้ดูอย่างเดียว
+    </div>
+
+    <!-- กล่องเพิ่มประเภท ให้เห็นเฉพาะฝ่ายบุคคลตาม ACL.md · js/auth.js เป็นคนเปิดให้เห็น -->
+    <div class="card hidden" data-เฉพาะบทบาท="hr">
       <label for="ชื่อประเภทใหม่">เพิ่มประเภทการลาใหม่</label>
       <input type="text" id="ชื่อประเภทใหม่" placeholder="เช่น ลาคลอด">
       <div id="เตือนประเภท" class="alert alert-error hidden"></div>
