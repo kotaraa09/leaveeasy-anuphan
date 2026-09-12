@@ -89,3 +89,5 @@ ui-debug.log
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+# ภาพกับ snapshot ที่ Playwright MCP เขียนทิ้งไว้ตอน Claude สั่งเปิดเบราว์เซอร์
+/.playwright-mcp/
