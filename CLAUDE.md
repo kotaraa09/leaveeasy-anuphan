@@ -13,7 +13,7 @@ Firestore เก็บข้อมูลเป็น 📁 **โฟลเดอ�
 | ชื่อโฟลเดอร์ | เก็บอะไร | ชื่อไฟล์ข้างใน | ช่องข้อมูล |
 |---|---|---|---|
 | `users` | ผู้ใช้ | `u001`, `u002`, `u003` | `name` · `email` · `role` |
-| `leaveTypes` | ประเภทการลา | `lt001`, `lt002`, `lt003` | `name` |
+| `leaveTypes` | ประเภทการลา | `lt001`–`lt003` (ข้อมูลตัวอย่าง) · ที่เพิ่มใหม่ Firestore ตั้งชื่อให้เอง | `name` |
 | `leaveRequests` | ใบขอลา | `lr001` … `lr005` | `title` · `reason` · `status` · `requesterId` · `requesterName` · `approverId` · `approverName` · `leaveTypeId` · `leaveTypeName` · `startDate` · `endDate` · `createdAt` · `aiSuggestion` |
 | `leaveRequests/{รหัสใบลา}/approvals` | ความเห็นการอนุมัติ — **โฟลเดอร์ย่อยที่ซ้อนอยู่ในใบลาแต่ละใบ** ไม่ใช่โฟลเดอร์ระดับบนสุด | `ap001` … `ap004` | `authorId` · `authorName` · `message` · `createdAt` |
 | `leaveRequests/{รหัสใบลา}/aiLog` | บันทึกทุกครั้งที่เรียก AI — **โฟลเดอร์ย่อยเหมือน `approvals`** | Firestore ตั้งชื่อให้เอง | `input` · `output` · `createdAt` |
@@ -39,6 +39,9 @@ Firestore เก็บข้อมูลเป็น 📁 **โฟลเดอ�
 - Firestore ไม่มี JOIN — ทุกครั้งที่เก็บรหัสอ้างถึงไฟล์อื่น **ต้องจดชื่อซ้ำไว้คู่กันเสมอ**
   (`requesterId` คู่กับ `requesterName`, `approverId` คู่กับ `approverName`, `leaveTypeId` คู่กับ `leaveTypeName`)
   ไม่งั้นหน้าจอจะขึ้น `u001` แทนชื่อคน
+- ประเภทการลาอ่านจาก Firestore ผ่าน `js/leave-types-data.js` **ที่เดียว**
+  ห้ามอ่าน `window.LEAVE_DATA.leaveTypes` ในหน้าใช้งานอีก — `js/data.js` เหลือหน้าที่เดียว
+  คือเป็นข้อมูลตัวอย่างให้ `seed.html` ใช้ตอนตั้งระบบครั้งเดียว
 
 ---
 
