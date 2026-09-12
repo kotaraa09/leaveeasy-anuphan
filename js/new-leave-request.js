@@ -8,11 +8,15 @@
 //    2. ต้องรอ (await) ให้เขียนสำเร็จก่อน ค่อยเปลี่ยนหน้า
 //       ถ้าสั่งเปลี่ยนหน้าทันที เบราว์เซอร์จะตัดการเขียนกลางคัน — พังแบบเงียบ ๆ
 //    3. ไม่ต้องใส่ช่อง id ลงไป เพราะบน Firestore id คือ "ชื่อไฟล์" ไม่ใช่ช่องข้อมูล
+//    4. ประเภทการลาอ่านจาก Firestore แล้ว ไม่ใช่ window.LEAVE_DATA อีกต่อไป
+//       จึงต้องรอ (await) ให้อ่านเสร็จก่อนวาดรายการเลื่อนลง และต้องรับมือกรณี
+//       "อ่านไม่ได้" กับ "ไม่มีประเภทสักอัน" ให้ครบทั้งสองทาง
 // ─────────────────────────────────────────────────────────────
 
 import { db } from "./firebase-init.js";
 import { ต้องล็อกอิน } from "./auth.js";
 import { เรียกAI, แปลข้อผิดพลาดAI, มีคีย์ไหม } from "./ai.js";
+import { อ่านประเภทการลา, แปลข้อผิดพลาดประเภทการลา } from "./leave-types-data.js";
 import { collection, addDoc } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 (async function () {
@@ -36,13 +40,41 @@ import { collection, addDoc } from "https://www.gstatic.com/firebasejs/12.18.0/f
     ล่วงหน้ามากสุด: 730
   };
 
+  // ── ประเภทการลาอ่านจาก Firestore ──
+  // เก็บไว้ในตัวแปรนี้ที่เดียว แล้วทั้งรายการเลื่อนลง · ด่านตรวจฟอร์ม · รายชื่อที่ส่งให้ AI
+  // ใช้ชุดเดียวกันหมด ไม่งั้น AI อาจเสนอประเภทที่ไม่มีในรายการเลื่อนลง
+  var ประเภทการลา = [];
+
+  try {
+    ประเภทการลา = await อ่านประเภทการลา();
+  } catch (ข้อผิดพลาด) {
+    // อ่านประเภทไม่ได้ = กรอกฟอร์มให้ครบไม่ได้ตั้งแต่แรก
+    // ปิดปุ่มยื่นไปเลยดีกว่าปล่อยให้กรอกจนจบแล้วค่อยพบว่าส่งไม่ได้
+    ปิดฟอร์ม("โหลดประเภทการลาไม่สำเร็จ — " + แปลข้อผิดพลาดประเภทการลา(ข้อผิดพลาด, "อ่าน"));
+    return;
+  }
+
+  if (ประเภทการลา.length === 0) {
+    ปิดฟอร์ม("ยังไม่มีประเภทการลาในระบบ — ติดต่อฝ่ายบุคคลให้เพิ่มประเภทการลาก่อน จึงจะยื่นใบลาได้");
+    return;
+  }
+
   // เติมรายการเลื่อนลงด้วยประเภทการลาที่มีอยู่
-  window.LEAVE_DATA.leaveTypes.forEach(function (ประเภท) {
+  ประเภทการลา.forEach(function (ประเภท) {
     var ตัวเลือก = document.createElement("option");
     ตัวเลือก.value = ประเภท.id;
     ตัวเลือก.textContent = ประเภท.name;
     ช่องประเภท.appendChild(ตัวเลือก);
   });
+
+  // ── ฟอร์มใช้งานต่อไม่ได้ ── ขึ้นเหตุผลแล้วปิดทุกปุ่ม
+  // ปล่อยให้กรอกต่อทั้งที่ยื่นไม่ได้ คือปล่อยให้เสียเวลาฟรี
+  function ปิดฟอร์ม(ข้อความ) {
+    เตือน(ข้อความ);
+    ฟอร์ม.querySelectorAll("input, textarea, select, button").forEach(function (ช่อง) {
+      ช่อง.disabled = true;
+    });
+  }
 
   // ═══════════════════════════════════════════════════════════
   // 🤖 ปุ่ม AI ระดับ 1 — ให้ AI เสนอประเภทการลาจากเหตุผลที่กรอกไว้
@@ -131,7 +163,7 @@ import { collection, addDoc } from "https://www.gstatic.com/firebasejs/12.18.0/f
   // ── ส่งรายการประเภทที่มีอยู่จริงไปด้วยทุกครั้ง ──
   // ถ้าไม่ส่งไป AI จะเดาชื่อประเภทของบริษัทอื่นมาให้ แล้วจับคู่ไม่ติดสักครั้ง
   function ข้อความถามจัดประเภท(เหตุผล) {
-    var รายการ = window.LEAVE_DATA.leaveTypes.map(function (ประเภท) {
+    var รายการ = ประเภทการลา.map(function (ประเภท) {
       return ประเภท.id + " = " + ประเภท.name;
     }).join("\n");
 
@@ -144,7 +176,7 @@ import { collection, addDoc } from "https://www.gstatic.com/firebasejs/12.18.0/f
   // จึงต้องเทียบกับรายการจริงเองทุกครั้ง ไม่ตรง = คืน null แล้วไม่แตะช่องประเภท
   function จับคู่ประเภท(คำตอบ) {
     var ข้อความ = (คำตอบ || "").trim().toLowerCase();
-    var รายการ = window.LEAVE_DATA.leaveTypes;
+    var รายการ = ประเภทการลา;
 
     // 1. ตอบเป็นรหัสมาตรง ๆ — กรณีที่ตั้งใจให้เกิด
     var ตรงรหัส = รายการ.find(function (ประเภท) { return ประเภท.id.toLowerCase() === ข้อความ; });
@@ -201,7 +233,7 @@ import { collection, addDoc } from "https://www.gstatic.com/firebasejs/12.18.0/f
       return;
     }
 
-    var ประเภท = window.LEAVE_DATA.leaveTypes.find(function (t) { return t.id === ค่า.leaveTypeId; });
+    var ประเภท = ประเภทการลา.find(function (t) { return t.id === ค่า.leaveTypeId; });
 
     // ผู้ขอลาคือคนที่ล็อกอินอยู่ตอนนี้ — uid คือชื่อไฟล์ของเขาในโฟลเดอร์ users
     // 🔁 จด requesterName ซ้ำไว้ด้วยเสมอ เพราะ Firestore ไม่มี JOIN
@@ -269,7 +301,7 @@ import { collection, addDoc } from "https://www.gstatic.com/firebasejs/12.18.0/f
 
     // 4. ประเภทการลา — ต้องเป็นรหัสที่มีอยู่จริง
     //    ถ้าไม่ตรวจ ค่าที่ถูกแก้ในเบราว์เซอร์จะทำให้ leaveTypeName ว่าง แล้วตารางขึ้นช่องโหว่
-    var ประเภท = window.LEAVE_DATA.leaveTypes.find(function (t) { return t.id === ค่า.leaveTypeId; });
+    var ประเภท = ประเภทการลา.find(function (t) { return t.id === ค่า.leaveTypeId; });
     if (!ประเภท) {
       return ไม่ผ่าน("ประเภทการลาที่เลือกไม่มีอยู่ในระบบ — เลือกใหม่อีกครั้ง", "leaveTypeId");
     }

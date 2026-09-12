@@ -3,16 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <title>จัดการประเภทการลา · LeaveEasy</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%230071e3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5.2' width='22' height='19.8' rx='6.2'/%3E%3Cpath d='M3 11.4h22M9.6 3.4v3.6M18.4 3.4v3.6'/%3E%3Cpath d='m10 18.1 2.6 2.6 5.4-5.6'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300..700&display=swap">
   <link rel="stylesheet" href="css/style.css">
   <!-- ⚠️ ต้องอยู่ตรงนี้และห้ามใส่ defer — ทาโหมดมืดให้เสร็จก่อนหน้าจอวาดครั้งแรก
        ย้ายไปไว้ท้าย body เมื่อไร ผู้ใช้โหมดมืดจะเห็นหน้าขาวแวบทุกครั้งที่เปลี่ยนหน้า -->
   <script src="js/theme.js"></script>
+  <script src="js/icons.js" defer></script>
   <script src="js/util.js" defer></script>
   <script src="js/nav.js" defer></script>
-  <script src="js/data.js" defer></script>
-  <!-- leave-types.js เป็นมอดูล เพราะต้องถามบทบาทจาก js/auth.js ก่อนวาดปุ่มจัดการ
-       และมอดูลจะทำงานหลังสคริปต์ defer ข้างบนเสมอ window.LEAVE_DATA จึงพร้อมแล้ว -->
+  <!-- ไม่ต้องโหลด js/data.js แล้ว — ประเภทการลาอ่านจาก Firestore ผ่าน js/leave-types-data.js
+       js/data.js เหลือหน้าที่เดียวคือเป็นข้อมูลตัวอย่างให้ seed.html ใช้ตอนตั้งระบบ -->
   <script type="module" src="js/leave-types.js"></script>
 </head>
 <body>
