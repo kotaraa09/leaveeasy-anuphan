@@ -625,6 +625,75 @@ select {
 .alert b { font-weight: 600; }
 
 /* ═════════════════════════════════════════════════════════════
+   ผู้ช่วย AI
+   ทุกอย่างที่ AI เป็นคนเสนอต้องดูต่างจากข้อมูลที่คนกรอกเองเสมอ
+   นี่ไม่ใช่เรื่องความสวย แต่เป็นเรื่องความรับผิดชอบ — คนอ่านต้องแยกออก
+   ว่าอันไหนคือข้อเสนอที่ยังต้องตรวจ อันไหนคือสิ่งที่คนตัดสินใจแล้ว
+   ═════════════════════════════════════════════════════════════ */
+
+/* แถวปุ่ม AI ใต้ช่องที่มันช่วยกรอก */
+.ai-row {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.ai-row .hint { margin-top: 0; }
+
+/* ข้อความผลลัพธ์ใต้ช่อง — ป้ายข้อเสนอ · กำลังทำงาน · ปัญหา ใช้กล่องเดียวกัน */
+.ai-note {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin-top: 10px;
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  font-size: .875rem;
+  line-height: 1.5;
+}
+.ai-note .ico { margin-top: .22em; }
+
+/* ข้อเสนอจาก AI — สีเน้น เพราะต้องสะดุดตาพอให้คนรู้ว่ามีอะไรเปลี่ยนในช่องข้างบน */
+.ai-note-เอไอ {
+  background: var(--พื้นสีเน้น);
+  color: var(--สีเน้น);
+  font-weight: 500;
+}
+.ai-note-เตือน { background: var(--พื้นเหลือง); border-color: var(--ขอบเหลือง); color: var(--เหลือง); }
+.ai-note-รอ    { background: var(--พื้นรอง); color: var(--ตัวอักษรรอง); }
+.ai-note-ปกติ  { background: var(--พื้นรอง); color: var(--ตัวอักษรรอง); }
+
+/* ป้ายกำกับว่าเนื้อหาก้อนนี้มาจาก AI */
+.pill-ai { background: var(--พื้นสีเน้น); color: var(--สีเน้น); }
+
+/* แผงผู้ช่วย AI ในหน้ารายละเอียดใบลา — คั่นด้วยเส้นบน เพราะมันไม่ใช่ข้อมูลของใบลา
+   แต่เป็นชั้นที่วางทับอยู่ข้างบน คนอ่านต้องเห็นรอยต่อนั้น */
+.ai-panel {
+  padding: 18px 20px;
+  border-top: 1px solid var(--เส้นคั่น);
+  background: var(--พื้นสีเน้น);
+}
+.ai-panel .ai-text { margin: 0 0 4px; }
+.ai-panel .hint:last-child { margin-top: 12px; }
+/* ปุ่มบนพื้นที่มีสีอยู่แล้ว ต้องยกตัวขึ้นมาเป็นพื้นการ์ด ไม่งั้นเทาบนฟ้าจะกลืนกันจนหาปุ่มไม่เจอ */
+.ai-panel .btn-ghost { background: var(--พื้นการ์ด); }
+.ai-panel .btn-ghost:hover { background: var(--พื้นรอง); }
+
+/* กล่องคำตอบในหน้าทดสอบ (ai-test.html) */
+.ai-box {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--เส้นคั่น);
+  background: var(--พื้นรอง);
+}
+.ai-head {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.ai-head .hint { margin-top: 0; }
+.ai-text { margin: 0; white-space: pre-wrap; line-height: 1.65; }
+
+/* ═════════════════════════════════════════════════════════════
    สถานะว่างเปล่า — ต้องสอนว่าทำอะไรต่อ ไม่ใช่แค่บอกว่า "ไม่มีข้อมูล"
    ═════════════════════════════════════════════════════════════ */
 

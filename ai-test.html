@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <title>ทดสอบเรียก AI · LeaveEasy</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%230071e3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5.2' width='22' height='19.8' rx='6.2'/%3E%3Cpath d='M3 11.4h22M9.6 3.4v3.6M18.4 3.4v3.6'/%3E%3Cpath d='m10 18.1 2.6 2.6 5.4-5.6'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300..700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/icons.js" defer></script>
+  <script src="js/util.js" defer></script>
+  <script src="js/nav.js" defer></script>
+  <script type="module" src="js/ai-test.js"></script>
+</head>
+<body>
+  <div id="nav"></div>
+
+  <main class="container container-detail">
+    <a class="back-link" href="index.html"><span data-ไอคอน="ซ้าย"></span>หน้าแรก</a>
+
+    <div class="page-head">
+      <div class="titles">
+        <h1>ทดสอบเรียก AI</h1>
+        <p class="subtitle">หน้านี้มีไว้พิสูจน์ว่าคีย์กับชื่อรุ่นโมเดลใช้งานได้จริง ก่อนไปทำปุ่ม AI ในหน้าอื่น
+          — ไม่ได้แตะฐานข้อมูลเลย</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="ข้อความเตือน" class="alert alert-error hidden" role="alert"></div>
+
+      <div class="field">
+        <label for="ข้อความทดสอบ">ข้อความที่จะส่งให้ AI</label>
+        <textarea id="ข้อความทดสอบ" maxlength="500">สวัสดี</textarea>
+        <p class="hint">พิมพ์อะไรก็ได้ · ใบงานให้ลองด้วยคำว่า “สวัสดี” ก่อน</p>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" id="ปุ่มส่ง"><span data-ไอคอน="เอไอ"></span>ส่งให้ AI</button>
+      </div>
+
+      <!-- ที่วางคำตอบ — ว่างไว้ก่อน js/ai-test.js จะเติมให้ตอนได้คำตอบ -->
+      <div id="กล่องคำตอบ" class="ai-box hidden" aria-live="polite">
+        <div class="ai-head">
+          <span class="pill pill-ai"><span data-ไอคอน="เอไอ" class="ico-sm"></span>คำตอบจาก AI</span>
+          <span class="hint" id="เวลาที่ใช้"></span>
+        </div>
+        <p id="เนื้อคำตอบ" class="ai-text"></p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

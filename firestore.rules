@@ -139,13 +139,19 @@ service cloud.firestore {
                     && request.resource.data.status == "รอพิจารณา"
                     && request.resource.data.approverId == "";
 
-      // ── แก้ไข ── อนุญาตแค่ 2 แบบเท่านั้น นอกจากนี้ปฏิเสธหมด
+      // ── แก้ไข ── อนุญาตแค่ 3 แบบเท่านั้น นอกจากนี้ปฏิเสธหมด
       //
       // แบบที่ 1 · เปลี่ยนสถานะ (อนุมัติ / ไม่อนุมัติ)
       //    ต้องเป็นผู้อนุมัติหรือฝ่ายบุคคล · ต้องไม่ใช่ใบของตัวเอง · ใบต้องยังรอพิจารณา
       //    แก้ได้ช่อง status ช่องเดียว และเป็นได้แค่ 2 ค่านี้ (ห้ามมีสถานะที่ 4)
       //
       // แบบที่ 2 · กำหนดผู้อนุมัติ — ฝ่ายบุคคลเท่านั้น แตะได้แค่ 2 ช่องที่คู่กัน
+      //
+      // แบบที่ 3 · เขียนสรุปจาก AI (สัปดาห์ที่ 8)
+      //    🔒 onlyChanged(["aiSuggestion"]) คือหัวใจของข้อนี้
+      //       ต่อให้โค้ดฝั่งเว็บถูกแก้ให้ส่ง status ไปพร้อมกัน กฎนี้ก็ปฏิเสธทั้งคำขอ
+      //       "AI สรุปให้อ่าน ไม่ได้ตัดสินแทน" จึงถูกบังคับที่ฝั่งฐานข้อมูลจริง ไม่ใช่แค่มารยาทของโค้ด
+      //    ให้เฉพาะคนที่มีสิทธิ์ตัดสินใบนี้เป็นคนสั่งสรุป เพราะสรุปนี้เขียนให้หัวหน้าอ่าน
       allow update: if (
                       isApprover()
                       && !isMine()
@@ -156,6 +162,11 @@ service cloud.firestore {
                       isHR()
                       && isPending()
                       && onlyChanged(["approverId", "approverName"])
+                    ) || (
+                      isApprover()
+                      && !isMine()
+                      && onlyChanged(["aiSuggestion"])
+                      && request.resource.data.aiSuggestion is string
                     );
 
       // ── ลบ ── เจ้าของใบเท่านั้น และเฉพาะใบที่ยังไม่ถูกตัดสิน
@@ -196,9 +207,49 @@ service cloud.firestore {
         // ลบได้เฉพาะตอนที่เจ้าของใบลบใบทั้งใบ (js/leave-request-detail.js ลบเป็นชุดเดียวกัน)
         allow delete: if parentIsMine() && parentRequest().status == "รอพิจารณา";
       }
+
+      // ─────────────────────────────────────────────────────
+      // 📁 aiLog — บันทึกทุกครั้งที่เรียก AI กับใบลาใบนี้ (สัปดาห์ที่ 8)
+      //
+      // มีไว้ตอบคำถามว่า "AI เห็นอะไรถึงสรุปออกมาแบบนี้" ย้อนหลังได้
+      // เก็บทั้ง input ที่ส่งไปและ output ที่ได้กลับมา จึงเป็นหลักฐาน ไม่ใช่ข้อมูลใช้งาน
+      //
+      // ⚠️ กฎของไฟล์แม่ไม่ตกทอดลงมา ต้องเขียนครอบเองเหมือน approvals
+      // ─────────────────────────────────────────────────────
+      match /aiLog/{logId} {
+
+        function parentRequest() {
+          return get(/databases/$(database)/documents/leaveRequests/$(requestId)).data;
+        }
+
+        function parentIsMine() {
+          return loggedIn() && parentRequest().requesterId == request.auth.uid;
+        }
+
+        // เห็นบันทึกได้ ก็ต่อเมื่อมีสิทธิ์เห็นใบลาใบนั้น — เหมือนกฎของ approvals
+        // เจ้าของใบต้องอ่านได้ด้วย ไม่งั้นตอนลบใบทั้งใบจะไล่ลบบันทึกในนี้ไม่ได้
+        allow read: if isApprover() || parentIsMine();
+
+        // ── เขียนบันทึกใหม่ ── คนที่สั่งให้ AI ทำงานเท่านั้น และต้องครบ 3 ช่อง
+        // 🔒 ต้องตรงกับเงื่อนไขของ aiSuggestion ข้างบน ไม่งั้นจะมีบันทึกโดยไม่มีสรุป
+        allow create: if isApprover()
+                      && !parentIsMine()
+                      && request.resource.data.keys().hasOnly(["input", "output", "createdAt"])
+                      && request.resource.data.input is string
+                      && request.resource.data.output is string
+                      // เช็ค createdAt ด้วย เพราะ hasOnly ยอมให้ "ขาดบางช่อง" ได้
+                      // ไม่มีบรรทัดนี้ บันทึกที่ไม่มีวันเวลาก็ผ่านเข้าไปได้ แล้วเรียงลำดับไม่ได้
+                      && request.resource.data.createdAt is string;
+
+        // บันทึกที่เขียนแล้วแก้ย้อนหลังไม่ได้ — แก้ได้เมื่อไรก็ไม่ใช่หลักฐานอีกต่อไป
+        allow update: if false;
+
+        // ลบได้เฉพาะตอนที่เจ้าของใบลบใบทั้งใบ เหมือน approvals
+        allow delete: if parentIsMine() && parentRequest().status == "รอพิจารณา";
+      }
     }
 
-    // โฟลเดอร์อื่นนอกจาก 4 ชื่อข้างบน ไม่มีกฎรองรับ = เข้าไม่ได้โดยปริยาย
+    // โฟลเดอร์อื่นนอกจาก 5 ชื่อข้างบน ไม่มีกฎรองรับ = เข้าไม่ได้โดยปริยาย
     // ไม่ต้องเขียนกฎปฏิเสธเพิ่ม เพราะ Firestore ปิดทุกอย่างที่ไม่ได้เปิดไว้อยู่แล้ว
   }
 }

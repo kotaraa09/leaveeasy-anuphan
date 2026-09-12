@@ -51,6 +51,18 @@
           <select id="leaveTypeId">
             <option value="">เลือกประเภทการลา</option>
           </select>
+
+          <!-- ปุ่ม AI ระดับ 1 — AI เสนอประเภทให้จากเหตุผลที่กรอกไว้
+               แต่คนยังเป็นคนกดยืนยันและแก้ประเภทได้เสมอ ดู js/new-leave-request.js -->
+          <div class="ai-row">
+            <button type="button" class="btn-ghost btn-sm" id="ปุ่มเอไอ">
+              <span data-ไอคอน="เอไอ" class="ico-sm"></span>ให้ AI ช่วยจัดประเภทการลา
+            </button>
+            <span class="hint">AI จะอ่านช่องเหตุผลข้างบน แล้วเลือกจากประเภทที่มีอยู่จริงให้</span>
+          </div>
+
+          <!-- ที่วางผลจาก AI — ทั้งป้ายข้อเสนอและข้อความตอนเรียกไม่สำเร็จขึ้นตรงนี้ -->
+          <div id="ผลจากเอไอ" class="ai-note hidden" aria-live="polite"></div>
         </div>
 
         <!-- วันเริ่มกับวันสิ้นสุดเป็นคำถามเดียวกัน คือ "ลาช่วงไหน" จึงวางคู่กันในแถวเดียว -->
