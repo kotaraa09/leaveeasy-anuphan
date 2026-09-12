@@ -17,6 +17,7 @@
       "serve.json",
       "**/*.md",
       "docs/**",
+      "js/ai-key.example.js",
       "playwright.config.js",
       "tests/**",
       "seed.html",
