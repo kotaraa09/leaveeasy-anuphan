@@ -17,8 +17,18 @@
       "serve.json",
       "**/*.md",
       "docs/**",
+      "playwright.config.js",
+      "tests/**",
       "seed.html",
       "js/seed.js"
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(html|js|css)",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache" }
+        ]
+      }
     ]
   },
   "emulators": {
